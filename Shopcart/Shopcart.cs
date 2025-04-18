@@ -12,7 +12,7 @@
         }
     }
 
-    public class Shopcart
+    public class Shopcart : IShopcart
     {
         private readonly List<Product> _products = new();
 
@@ -32,4 +32,3 @@
         }
     }
 }
-
