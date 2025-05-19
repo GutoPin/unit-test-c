@@ -1,0 +1,15 @@
+# Directorios generados por la compilación
+bin/
+obj/
+
+# Archivos de configuración del IDE
+*.suo
+*.user
+*.userosscache
+*.sln.DotSettings
+
+# Archivos de NuGet
+packages/
+
+# Archivos temporales
+*.log
