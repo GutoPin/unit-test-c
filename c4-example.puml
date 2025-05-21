@@ -1,0 +1,80 @@
+@startuml Tutorial_C4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Define los usuarios
+Person(supervisor, "Supervisor", "Responsible for overseeing the entire operation")
+Person(analyst, "Analyst", "Responsible for reviewing the causes of incidents")
+Person(user, "User", "Reports incidents or requests")
+
+System_Boundary(serviceDeskSystem, "ServiceDesk System") {
+    ' Web Application
+    Container(webApp, "Web Application", "React", "Web interface for managing incident reports, change requests, and requirements.")
+
+    ' API Gateway and Authentication/Catalog Services
+    Container(serviceCatalogCache, "Service Catalog Cache", "Cache", "Stores the service catalog for quick access.")
+    Container(ldapService, "LDAP Service", "LDAP", "User authentication system used by the company.")
+    Container(apiGateway, "API Gateway", "API", "Coordinates requests between microservices.")
+
+    ' Microservices
+    Container(metricsService, "Metrics Service", "Python", "Calculates indicators related to service, costs, and system effectiveness.")
+    Container(changeRequestService, "Change Request Service", "Python", "Microservice responsible for managing user change requests.")
+    Container(receptionComponent, "Reception Component", "Python", "Receives emails or WhatsApp messages and automatically generates tickets.")
+    Container(ticketService, "Ticket Service", "Python", "Microservice responsible for managing user tickets.")
+
+    ' AI Services
+    Container(iaInterface, "AI Interface", "Web", "Web interface that presents possible solutions for identified problems.")
+    Container(llmModel, "LLM Model", "OpenAI", "AI model that processes information and identifies problems and their causes.")
+    Container(llmFramework, "LLM Framework", "Python", "Framework that interacts with the AI model, analyzing data.")
+
+    ' Databases
+    ContainerDb(cassandraDb, "Comments Database", "Cassandra", "NoSQL database used to store comments and change requests.")
+    ContainerDb(postgresDb, "Database", "PostgreSQL", "Stores data related to tickets, users, reports, and other records.")
+}
+
+' External Systems
+System_Ext(openaiService, "OpenAI Service", "External AI service")
+System_Ext(whatsappService, "WhatsApp Service", "External messaging service")
+System_Ext(gmailService, "Gmail Service", "External service for managing email")
+
+' User Relations
+Rel(supervisor, webApp, "Oversees the operation")
+Rel(analyst, webApp, "Manages tickets")
+Rel(user, webApp, "Notifies incidents/requirements")
+
+' Web Application Relations
+Rel(webApp, apiGateway, "Makes requests")
+
+' API Gateway Relations
+Rel(apiGateway, changeRequestService, "Manages change requests")
+Rel(apiGateway, serviceCatalogCache, "Queries the service catalog")
+Rel(apiGateway, metricsService, "Requests the calculation of metrics")
+Rel(apiGateway, receptionComponent, "Sends received data")
+Rel(apiGateway, ldapService, "Verifies authentication")
+Rel(apiGateway, ticketService, "Manages tickets")
+
+' Reception Component Relations
+Rel(receptionComponent, whatsappService, "Receives WhatsApp messages")
+Rel(receptionComponent, ticketService, "Assigns tickets to an analyst")
+Rel(receptionComponent, postgresDb, "Automatically records tickets")
+Rel(receptionComponent, gmailService, "Receives emails from helpdesk@company.com")
+
+' Ticket Service Relations
+Rel(ticketService, cassandraDb, "Stores comments")
+Rel(ticketService, postgresDb, "Reads and stores ticket data")
+
+' Change Request Service Relations
+Rel(changeRequestService, cassandraDb, "Stores change details")
+Rel(changeRequestService, postgresDb, "Reads and stores change request data")
+
+' AI Service Relations
+Rel(webApp, iaInterface, "Displays a popup window")
+Rel(iaInterface, llmModel, "Sends possible solutions")
+Rel(llmModel, llmFramework, "Sends data for analysis")
+Rel(llmModel, openaiService, "Uses the external OpenAI service")
+Rel(llmFramework, cassandraDb, "Analyzes comments and change requests")
+
+' Metrics Service Relations
+Rel(metricsService, cassandraDb, "Reads comment and change data")
+Rel(llmModel, metricsService, "Sends AI effectiveness metrics")
+Rel(metricsService, postgresDb, "Reads ticket data")
+@enduml

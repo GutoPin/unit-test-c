@@ -1,0 +1,81 @@
+@startuml Tutorial_ClassDiagram
+' Tutorial para crear un diagrama de clases en PlantUML
+
+' Paso 1: Definir las clases
+' Utiliza la palabra clave "class" para definir una clase.
+' Sintaxis: class NombreDeClase {
+'              atributos y métodos
+'          }
+class Ejemplo {
+    - atributoPrivado: string
+    + metodoPublico(): void
+}
+
+class Usuario {
+    - id: int
+    - nombre: string
+    - email: string
+    + autenticar(password: string): bool
+    + actualizarPerfil(nombre: string, email: string): void
+}
+
+class Producto {
+    - id: int
+    - nombre: string
+    - precio: decimal
+    + aplicarDescuento(porcentaje: float): void
+}
+
+class Pedido {
+    - id: int
+    - fecha: DateTime
+    - total: decimal
+    + agregarProducto(producto: Producto, cantidad: int): void
+    + calcularTotal(): decimal
+}
+
+class Carrito {
+    - productos: List<Producto>
+    + agregarProducto(producto: Producto): void
+    + eliminarProducto(producto: Producto): void
+    + vaciarCarrito(): void
+}
+
+class Administrador {
+    - id: int
+    - permisos: List<string>
+    + asignarPermiso(permiso: string): void
+    + revocarPermiso(permiso: string): void
+}
+
+class Sistema {
+    + registrarUsuario(usuario: Usuario): void
+    + procesarPedido(pedido: Pedido): void
+    + autenticarUsuario(email: string, password: string): Usuario
+}
+
+' Paso 2: Agregar relaciones entre clases
+' Puedes definir relaciones como herencia, composición, agregación, etc.
+' Sintaxis: Clase1 <|-- Clase2 (herencia)
+'           Clase1 *-- Clase2 (composición)
+'           Clase1 o-- Clase2 (agregación)
+Usuario "1" *-- "*" Pedido : "realiza"
+Pedido "1" *-- "*" Producto : "contiene"
+Usuario <|-- Administrador : "es un"
+Carrito "1" *-- "*" Producto : "almacena"
+Usuario "1" o-- Carrito : "posee"
+Sistema "1" *-- "*" Usuario : "gestiona"
+Sistema "1" *-- "*" Pedido : "procesa"
+
+' Paso 3: Personalizar el diagrama
+' Puedes agregar notas, cambiar colores y estilos para mejorar la visualización.
+' Sintaxis: note left/right/top/bottom of Clase : "Texto de la nota"
+' note top of ClaseBase : "Clase principal del sistema"
+
+' Estilos opcionales
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #F5F5F5
+skinparam classFontColor black
+skinparam classBorderColor #3C7FC0
+
+@enduml
