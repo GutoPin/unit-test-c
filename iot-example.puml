@@ -1,0 +1,84 @@
+@startuml SmartEnvironmentalMonitor
+
+' Abstract Classes
+abstract class Sensor {
+  # sensorId: String
+  # pin: int
+  + Sensor(id: String, pinNumber: int)
+  + {abstract} readValue(): float
+  + getId(): String
+  + getPin(): int
+}
+
+abstract class Actuator {
+  # actuatorId: String
+  # pin: int
+  + Actuator(id: String, pinNumber: int)
+  + {abstract} control(state: int): void
+  + getId(): String
+  + getPin(): int
+}
+
+' Concrete Sensor Classes
+class TemperatureSensor extends Sensor {
+  + TemperatureSensor(id: String, pinNumber: int)
+  + readValue(): float
+}
+
+class HumiditySensor extends Sensor {
+  + HumiditySensor(id: String, pinNumber: int)
+  + readValue(): float
+}
+
+class LightSensor extends Sensor {
+  + LightSensor(id: String, pinNumber: int)
+  + readValue(): float
+}
+
+' Concrete Actuator Class
+class LedActuator extends Actuator {
+  + LedActuator(id: String, pinNumber: int)
+  + control(state: int): void ' 0 for OFF, 1 for ON
+  + turnOn(): void
+  + turnOff(): void
+}
+
+' Main Device Controller Class (Represents the Arduino logic)
+class DeviceController {
+  - deviceId: String
+  - sensors: Sensor[*]
+  - actuators: Actuator[*]
+  + DeviceController(id: String)
+  + addSensor(sensor: Sensor): void
+  + addActuator(actuator: Actuator): void
+  + readAllSensors(): void
+  + processDataAndControl(): void
+  + sendDataToSerial(data: String): void
+  + setup(): void
+  + loop(): void
+}
+
+' Relationships
+DeviceController o-- "*" Sensor : manages
+DeviceController o-- "*" Actuator : controls
+
+' Notes for Arduino Implementation
+note right of DeviceController
+  This class represents the main logic
+  that would run on an Arduino board.
+  The `setup()` and `loop()` methods
+  correspond to Arduino's main functions.
+end note
+
+note bottom of Sensor
+  Sensor readings might require specific
+  libraries depending on the hardware
+  (e.g., DHT.h for Temperature/Humidity).
+end note
+
+note bottom of LedActuator
+  `control(state)` can map to
+  `digitalWrite(pin, state)` in Arduino.
+end note
+
+@enduml
